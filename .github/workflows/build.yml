@@ -7,7 +7,7 @@ on:
       version:
         description: 'Version de la release (ex: 1.0.0)'
         required: true
-        default: '1.0.0'
+        default: '1.0.2'
         type: string
 
 permissions:
@@ -19,19 +19,23 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+      # Récupération du code source
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Installation de Python
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install PyInstaller
+      # Installation de PyInstaller
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install pyinstaller
 
+      # Compilation du programme
       - name: Compile executable
         run: |
           pyinstaller \
@@ -40,11 +44,17 @@ jobs:
             --name AlmaLinux-Hardening \
             AlmaLinux-Hardening.py
 
+      # Permissions d'exécution
+      - name: Make binary executable
+        run: chmod 755 dist/AlmaLinux-Hardening
+
+      # Vérification du binaire
       - name: Verify binary
         run: |
           file dist/AlmaLinux-Hardening
-          chmod +x dist/AlmaLinux-Hardening
+          ls -lh dist/AlmaLinux-Hardening
 
+      # Création automatique de la Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -54,3 +64,11 @@ jobs:
           files: dist/AlmaLinux-Hardening
           generate_release_notes: true
           fail_on_unmatched_files: true
+
+      # Conservation du binaire comme Artifact
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AlmaLinux-Hardening-linux-x86_64
+          path: dist/AlmaLinux-Hardening
+          retention-days: 30
