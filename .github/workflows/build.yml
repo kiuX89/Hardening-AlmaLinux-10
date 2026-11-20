@@ -2,10 +2,13 @@
 name: Build AlmaLinux Hardening
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version de la release (ex: 1.0.0)'
+        required: true
+        default: '1.0.0'
+        type: string
 
 permissions:
   contents: write
@@ -37,17 +40,17 @@ jobs:
             --name AlmaLinux-Hardening \
             AlmaLinux-Hardening.py
 
+      - name: Verify binary
+        run: |
+          file dist/AlmaLinux-Hardening
+          chmod +x dist/AlmaLinux-Hardening
+
       - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
+          tag_name: v${{ inputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: AlmaLinux-Hardening v${{ inputs.version }}
           files: dist/AlmaLinux-Hardening
           generate_release_notes: true
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: AlmaLinux-Hardening-linux-x86_64
-          path: dist/AlmaLinux-Hardening
-          retention-days: 30
+          fail_on_unmatched_files: true
