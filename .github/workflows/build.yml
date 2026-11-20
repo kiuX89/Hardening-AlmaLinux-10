@@ -45,10 +45,6 @@ jobs:
           --name AlmaLinux-Hardening \
           AlmaLinux-Hardening.py
 
-      # Permissions d'exécution
-      - name: Make binary executable
-        run: chmod 755 dist/AlmaLinux-Hardening
-
       # Vérification du binaire
       - name: Verify binary
         run: |
