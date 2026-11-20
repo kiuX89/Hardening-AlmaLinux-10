@@ -38,6 +38,8 @@ jobs:
       # Compilation du programme
       - name: Compile executable
         run: |
+          unset PYTHONHOME
+          unset PYTHONPATH
           pyinstaller \
             --onefile \
             --clean \
