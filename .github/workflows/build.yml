@@ -36,15 +36,14 @@ jobs:
           python -m pip install pyinstaller
 
       # Compilation du programme
-      - name: Compile executable
+      - name: Build executable
         run: |
-          unset PYTHONHOME
-          unset PYTHONPATH
           pyinstaller \
-            --onefile \
-            --clean \
-            --name AlmaLinux-Hardening \
-            AlmaLinux-Hardening.py
+          --onefile \
+          --clean \
+          --runtime-hook .github/workflows/runtime_hook.py \
+          --name AlmaLinux-Hardening \
+          AlmaLinux-Hardening.py
 
       # Permissions d'exécution
       - name: Make binary executable
