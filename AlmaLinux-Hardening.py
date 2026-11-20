@@ -18,7 +18,7 @@ import time
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-LOG_FILE = SCRIPT_DIR / "script.log"
+LOG_FILE = Path("/tmp/script.log")
 STATE_DIR = Path("/var/lib/alma-hardening")
 SSH_PORT = 49222
 SSH_DROPIN = Path("/etc/ssh/sshd_config.d/99-hardening.conf")
