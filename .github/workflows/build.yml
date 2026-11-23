@@ -68,6 +68,49 @@ jobs:
           path: dist/AlmaLinux-Hardening-linux-${{ matrix.arch }}
           retention-days: 30
 
+
+  package:
+    name: Package Linux binaries
+    needs: build
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: package
+
+      - name: Prepare archive
+        run: |
+          mkdir -p release/AlmaLinux-Hardening-v${{ inputs.version }}
+
+          cp package/AlmaLinux-Hardening-linux-x86_64/* \
+            release/AlmaLinux-Hardening-v${{ inputs.version }}/
+
+          cp package/AlmaLinux-Hardening-linux-arm64/* \
+            release/AlmaLinux-Hardening-v${{ inputs.version }}/
+
+          chmod +x release/AlmaLinux-Hardening-v${{ inputs.version }}/*
+
+      - name: Create tar.gz
+        run: |
+          cd release
+          tar -czvf AlmaLinux-Hardening-v${{ inputs.version }}-linux.tar.gz \
+            AlmaLinux-Hardening-v${{ inputs.version }}
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: AlmaLinux-Hardening-linux-package
+          path: release/*.tar.gz
+
+      - name: Upload archive to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          files: release/*.tar.gz
+
+
   release:
     name: Create GitHub Release
     needs: build
